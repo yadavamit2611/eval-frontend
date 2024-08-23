@@ -1,0 +1,42 @@
+.container {
+    max-width: 100%;
+    padding: 20px;
+  }
+  
+  .custom-table {
+    font-size: 14px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-table th {
+    background-color: #343a40;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .custom-table td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .custom-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+  
+  .custom-table tr:hover {
+    background-color: #dee2e6;
+  }
+  
+  .text-center {
+    text-align: center;
+    color: #343a40;
+  }
+  
+  .custom-table div {
+    text-align: left;
+  }
+  
