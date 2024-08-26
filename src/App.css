@@ -1,0 +1,26 @@
+/* Page title styles */
+.page-title {
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 2.5rem !important; /* Responsive font size */
+  font-weight: 700 !important;
+  color: #2c3e50 !important; /* Dark color for contrast */
+  display: flex !important; /* Ensure border and padding are contained */
+  justify-content: left;
+  margin-left: 10px;
+
+}
+
+/* Optional: Responsive adjustments */
+@media (max-width: 768px) {
+  .page-title {
+      font-size: 2rem !important; /* Slightly smaller font size for smaller screens */
+      margin: 15px 0 !important; /* Reduced margin on smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+      font-size: 1.5rem !important; /* Further reduced font size for very small screens */
+      margin: 10px 0 !important; /* Further reduced margin */
+  }
+}

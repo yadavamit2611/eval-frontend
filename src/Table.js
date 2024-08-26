@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'react-bootstrap';
-import './TableComponent.css'; // Import the custom CSS
+import './Table.css'; // Import the custom CSS
 
 const TableComponent = () => {
   const [data, setData] = useState([]);
