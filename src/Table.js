@@ -50,12 +50,26 @@ const TableComponent = () => {
   }
 
   return (
-    <div className="container mt-5">
-      <h1 className="mb-4 text-center">Evaluated Results</h1>
+    <div className={`container mt-5`}>
+      <div className="d-flex justify-content-between mb-4">
+        <h1 className="text-center">Evaluated Results</h1>
+      </div>
       <Table striped bordered hover responsive className="custom-table">
-        <thead className='thead-dark'>
+        <thead>
           <tr>
-            {data[0] && Object.keys(data[0]).map((key) => (
+            {/* Display selected columns first */}
+            <th>No.</th>
+            <th>Sector</th>
+            <th>Question</th>
+            <th>Answer</th>
+            <th>Question_tokens</th>
+            <th>Answer_tokens</th>
+            {/* Followed by the rest of the keys in GPT-3.5 results */}
+            {data[0] && Object.keys(data[0]).filter(key => !['_id', 'Sector', 'Question', 'Answer', 'Question_tokens', 'Answer_tokens'].includes(key) && !key.includes('GPT4')).map((key) => (
+              <th key={key}>{key}</th>
+            ))}
+            {/* Then the GPT-4 specific keys */}
+            {data[0] && Object.keys(data[0]).filter(key => key.includes('GPT4')).map((key) => (
               <th key={key}>{key}</th>
             ))}
           </tr>
@@ -63,7 +77,21 @@ const TableComponent = () => {
         <tbody>
           {data.map((row, index) => (
             <tr key={index}>
-              {Object.entries(row).map(([key, value], idx) => (
+              {/* Display the selected columns first */}
+              <td>{index+1}</td>
+              <td>{row.Sector}</td>
+              <td>{row.Question}</td>
+              <td>{row.Answer}</td>
+              <td>{row.Question_tokens}</td>
+              <td>{row.Answer_tokens}</td>
+              {/* Followed by the rest of the values in GPT-3.5 results */}
+              {Object.entries(row).filter(([key]) => !['_id', 'Sector', 'Question', 'Answer', 'Question_tokens', 'Answer_tokens'].includes(key) && !key.includes('GPT4')).map(([key, value], idx) => (
+                <td key={idx}>
+                  {key.includes('ROUGE') ? formatRougeValues(value) : Array.isArray(value) ? value.join(', ') : value}
+                </td>
+              ))}
+              {/* Then the GPT-4 specific values */}
+              {Object.entries(row).filter(([key]) => key.includes('GPT4')).map(([key, value], idx) => (
                 <td key={idx}>
                   {key.includes('ROUGE') ? formatRougeValues(value) : Array.isArray(value) ? value.join(', ') : value}
                 </td>
