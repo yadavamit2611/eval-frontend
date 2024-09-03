@@ -1,0 +1,85 @@
+.detail-container {
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .card {
+    width: 100% !important;
+    max-width: 900px !important;
+    padding: 20px !important;
+    background-color: #fff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .card-section {
+    margin-bottom: 20px !important;
+  }
+  
+  .card-section h3 {
+    margin-bottom: 10px !important;
+    font-size: 1.2em !important;
+    color: #333 !important;
+  }
+  
+  .card-section p,
+  .card-section pre {
+    font-size: 1em !important;
+    color: #555 !important;
+    margin: 0 !important;
+    word-wrap: break-word !important;
+  }
+  
+  .comparison-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 20px !important;
+  }
+  
+  .comparison-table th,
+  .comparison-table td {
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+    text-align: left !important;
+  }
+  
+  .comparison-table th {
+    background-color: #f4f4f4 !important;
+    font-weight: bold !important;
+  }
+  
+  .comparison-table tr:nth-child(even) {
+    background-color: #f9f9f9 !important;
+  }
+  
+  .comparison-table tr:hover {
+    background-color: #f1f1f1 !important;
+  }
+  
+  .higher-value {
+    background-color: #d4edda !important; /* Green for higher values */
+    color: #155724 !important;
+  }
+  
+  .lower-value {
+    background-color: #f8d7da !important; /* Red for lower values */
+    color: #721c24 !important;
+  }
+
+  .back-button {
+    margin-bottom: 20px !important;
+    padding: 10px 20px !important;
+    background-color: #007bff !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    font-size: 1em !important;
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3 !important;
+  }
+  

@@ -1,15 +1,12 @@
 import React, { useMemo } from 'react';
 import { useTable, useSortBy, useGlobalFilter, usePagination, useRowSelect } from 'react-table';
+import { useNavigate } from 'react-router-dom';
 import { CSVLink } from 'react-csv';
 import './TableComponent.css';
 
-const TableComponent = ({ data }) => {
+const TableComponent = ({ data = [] }) => {
   const columns = useMemo(
     () => [
-/*       {
-        Header: 'ID',
-        accessor: '_id',
-      }, */
       {
         Header: 'Sector',
         accessor: 'Sector',
@@ -77,6 +74,8 @@ const TableComponent = ({ data }) => {
     state: { pageIndex, pageSize },
   } = tableInstance;
 
+  const navigate = useNavigate();
+
   const { globalFilter } = state;
 
   const headers = columns.map(column => ({
@@ -88,6 +87,9 @@ const TableComponent = ({ data }) => {
 
   return (
     <div className="table-container">
+      <div>
+        <h3>LLM Evaluation Results</h3>
+      </div>
       <input
         value={globalFilter || ''}
         onChange={(e) => setGlobalFilter(e.target.value)}
@@ -107,7 +109,7 @@ const TableComponent = ({ data }) => {
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                <th key={column.id} {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render('Header')}
                   <span>
                     {column.isSorted
@@ -125,9 +127,13 @@ const TableComponent = ({ data }) => {
           {page.map(row => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
+              <tr
+                {...row.getRowProps()}
+                onClick={() => navigate(`/details/${row.original._id}`)} // Add onClick handler
+                style={{ cursor: 'pointer' }} // Add a cursor pointer for better UX
+              >
                 {row.cells.map(cell => {
-                  return <td {...cell.getCellProps()}><div>{cell.render('Cell')}</div></td>;
+                  return <td key={cell.column.id} {...cell.getCellProps()}><div>{cell.render('Cell')}</div></td>;
                 })}
               </tr>
             );
