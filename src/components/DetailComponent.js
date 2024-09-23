@@ -83,10 +83,11 @@ const DetailComponent = ({ data }) => {
               {Object.keys(gpt3_5Data).map((key) => (
                 <tr key={key}>
                   <td>{key}</td>
-                  <td className={getColorClass(gpt3_5Data[key], gpt4Data[key])}>
+                  <td>
+                  {/* className={getColorClass(gpt4Data[key], gpt3_5Data[key])} */}
                     {Array.isArray(gpt3_5Data[key]) ? gpt3_5Data[key].join(', ') : gpt3_5Data[key]}
                   </td>
-                  <td className={getColorClass(gpt4Data[key], gpt3_5Data[key])}>
+                  <td>
                     {Array.isArray(gpt4Data[key]) ? gpt4Data[key].join(', ') : gpt4Data[key]}
                   </td>
                 </tr>
