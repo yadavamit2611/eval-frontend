@@ -88,6 +88,9 @@ const TableComponent = ({ data = [] }) => {
   return (
     <div className="table-container">
       <div>
+      < button onClick={() => navigate('/')} className="back-button">
+            Back to Home
+        </button>
         <h3>LLM Evaluation Results</h3>
       </div>
       <input
