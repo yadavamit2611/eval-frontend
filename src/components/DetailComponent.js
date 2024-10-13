@@ -13,35 +13,121 @@ const DetailComponent = ({ data }) => {
 
   // Extract GPT-3.5 and GPT-4 data
   const gpt3_5Data = {
+    "Response": selectedRow['gpt3.5-turbo_response'],
     "BLEU": selectedRow['BLEU GPT3.5'],
-    "Composite Score": selectedRow['Composite Score GPT3.5'],
-    "Contextual Relevance": selectedRow['Contextual Relevance GPT3.5 Response'],
-    "Factual Verification": selectedRow['Factual Verification GPT3.5 Response'],
     "METEOR": selectedRow['METEOR GPT3.5'],
-/*     "ROUGE": selectedRow['ROUGE GPT3.5'], */
+    "ROUGE": selectedRow['ROUGE GPT3.5'], // Handle nested ROUGE data
+    "PERPLEXITY": selectedRow['PERPLEXITY GPT3.5'],
+    "BERTSCORE": selectedRow['BERTSCORE GPT3.5'],
+    "LLM Fact Verification": selectedRow['LLM Fact Verification GPT3.5 Response'],
     "Semantic Similarity": selectedRow['SemanticSimilarity GPT3.5 Response'],
-    "Response Tokens": selectedRow['gpt3.5-turbo_response_tokens'],
+    "Composite Score": selectedRow['Composite Score GPT3.5'],
   };
 
   const gpt4Data = {
+    "Response": selectedRow['gpt-4-turbo_response'],
     "BLEU": selectedRow['BLEU GPT4'],
-    "Composite Score": selectedRow['Composite Score GPT4'],
-    "Contextual Relevance": selectedRow['Contextual Relevance GPT4 Response'],
-    "Factual Verification": selectedRow['Factual Verification GPT4 Response'],
     "METEOR": selectedRow['METEOR GPT4'],
-/*     "ROUGE": selectedRow['ROUGE GPT4'], */
+    "ROUGE": selectedRow['ROUGE GPT4'], // Handle nested ROUGE data
+    "PERPLEXITY": selectedRow['PERPLEXITY GPT4'],
+    "BERTSCORE": selectedRow['BERTSCORE GPT4'],
+    "LLM Fact Verification": selectedRow['LLM Fact Verification GPT4 Response'],
     "Semantic Similarity": selectedRow['SemanticSimilarity GPT4 Response'],
-    "Response Tokens": selectedRow['gpt-4-turbo_response_tokens'],
+    "Composite Score": selectedRow['Composite Score GPT4'],
   };
 
-  // Function to determine the color based on comparison
-  const getColorClass = (gpt3_5Value, gpt4Value) => {
+  // Function to handle displaying object-like metrics (e.g., ROUGE)
+  const renderNestedMetric = (metric) => {
+    if (typeof metric === 'object') {
+      return (
+        <div>
+          {Object.keys(metric).map((key) => (
+            <div key={key}>
+              <strong>{key}:</strong> {metric[key].join(', ')}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return metric;
+  };
+
+  // Function to calculate the average of ROUGE sub-metrics
+  const getRougeAverage = (rougeData) => {
+    const totalValues = Object.keys(rougeData)
+      .reduce((acc, key) => acc.concat(rougeData[key]), []); // Flatten all ROUGE arrays
+    const sum = totalValues.reduce((sum, value) => sum + value, 0); // Sum all values
+    return sum / totalValues.length; // Calculate average
+  };
+
+  // Updated getColorClass function with custom logic for ROUGE and Perplexity
+  const getColorClass = (gpt3_5Value, gpt4Value, metricType) => {
+    // Perplexity: closer to 0 is better
+    if (metricType === 'PERPLEXITY') {
+      if (gpt3_5Value < gpt4Value) {
+        return 'higher-value'; // GPT-3.5 is better (closer to 0)
+      } else if (gpt3_5Value > gpt4Value) {
+        return 'lower-value'; // GPT-4 is better (closer to 0)
+      }
+      return 'equal-value';
+    }
+
+    // ROUGE: compare based on the average value
+    if (metricType === 'ROUGE') {
+      const gpt3_5Average = getRougeAverage(gpt3_5Value);
+      const gpt4Average = getRougeAverage(gpt4Value);
+      if (gpt3_5Average > gpt4Average) {
+        return 'higher-value'; // GPT-3.5 has higher average ROUGE
+      } else if (gpt3_5Average < gpt4Average) {
+        return 'lower-value'; // GPT-4 has higher average ROUGE
+      }
+      return 'equal-value';
+    }
+
+    // Default comparison logic (higher is better)
     if (gpt3_5Value > gpt4Value) {
       return 'higher-value';
     } else if (gpt3_5Value < gpt4Value) {
       return 'lower-value';
     }
-    return '';
+    return 'equal-value';
+  };
+
+  // Function to count green rows
+  const countGreenRows = (gpt3_5Data, gpt4Data) => {
+    let gpt3_5Wins = 0;
+    let gpt4Wins = 0;
+
+    Object.keys(gpt3_5Data).forEach((key) => {
+      const gpt3_5Value = gpt3_5Data[key];
+      const gpt4Value = gpt4Data[key];
+      const colorClass = getColorClass(gpt3_5Value, gpt4Value, key);
+      
+      if (colorClass === 'higher-value') {
+        gpt3_5Wins += 1; // GPT-3.5 wins
+      } else if (colorClass === 'lower-value') {
+        gpt4Wins += 1; // GPT-4 wins
+      }
+    });
+
+    return { gpt3_5Wins, gpt4Wins };
+  };
+
+  // Get the number of green rows for each
+  const { gpt3_5Wins, gpt4Wins } = countGreenRows(gpt3_5Data, gpt4Data);
+
+  // Determine which response gets the green or red color based on wins
+  const getResponseColor = (model) => {
+    if (gpt3_5Wins > gpt4Wins && model === 'GPT-3.5') {
+      return 'higher-value'; // GPT-3.5 gets green
+    } else if (gpt4Wins > gpt3_5Wins && model === 'GPT-4') {
+      return 'higher-value'; // GPT-4 gets green
+    } else if (gpt3_5Wins > gpt4Wins && model === 'GPT-4') {
+      return 'lower-value'; // GPT-4 gets red
+    } else if (gpt4Wins > gpt3_5Wins && model === 'GPT-3.5') {
+      return 'lower-value'; // GPT-3.5 gets red
+    }
+    return 'equal-value'; // No color if there's a tie
   };
 
   return (
@@ -60,17 +146,19 @@ const DetailComponent = ({ data }) => {
           <h3>Answer</h3>
           <p>{selectedRow.Answer}</p>
         </div>
-        <div className="card-section">
+{/*         <div className="card-section">
           <h3>Question Tokens</h3>
           <p>{selectedRow.Question_tokens}</p>
         </div>
         <div className="card-section">
           <h3>Answer Tokens</h3>
           <p>{selectedRow.Answer_tokens}</p>
-        </div>
+        </div> */}
         {/* Comparison Table */}
         <div className="card-section">
-          <h3 style={{display:'flex',justifyContent:'center',alignItems:'center',fontStyle:'italic'}}>GPT-3.5 vs GPT-4 Comparison</h3>
+          <h3 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontStyle: 'italic' }}>
+            GPT-3.5 vs GPT-4 Comparison
+          </h3>
           <table className="comparison-table">
             <thead>
               <tr>
@@ -80,23 +168,29 @@ const DetailComponent = ({ data }) => {
               </tr>
             </thead>
             <tbody>
+            <tr>
+               <td>Response</td>
+                <td className={getResponseColor('GPT-3.5')}>{gpt3_5Data['Response']}</td>
+                <td className={getResponseColor('GPT-4')}>{gpt4Data['Response']}</td>
+              </tr>
               {Object.keys(gpt3_5Data).map((key) => (
-                <tr key={key}>
-                  <td>{key}</td>
-                  <td className={getColorClass(gpt3_5Data[key], gpt4Data[key])}>
-                  {/* className={getColorClass(gpt4Data[key], gpt3_5Data[key])} */}
-                    {Array.isArray(gpt3_5Data[key]) ? gpt3_5Data[key].join(', ') : gpt3_5Data[key]}
-                  </td>
-                  <td className={getColorClass(gpt4Data[key], gpt3_5Data[key])}>
-                    {Array.isArray(gpt4Data[key]) ? gpt4Data[key].join(', ') : gpt4Data[key]}
-                  </td>
-                </tr>
+                key !== 'Response' && ( // Only process keys that are not 'Response'
+                  <tr key={key}>
+                    <td>{key}</td>
+                    <td className={getColorClass(gpt3_5Data[key], gpt4Data[key], key)}>
+                      {renderNestedMetric(gpt3_5Data[key])}
+                    </td>
+                    <td className={getColorClass(gpt4Data[key], gpt3_5Data[key], key)}>
+                      {renderNestedMetric(gpt4Data[key])}
+                    </td>
+                  </tr>
+                )
               ))}
             </tbody>
           </table>
         </div>
-        <button onClick={() => navigate('/')} className="back-button">
-            Back to Table
+        <button onClick={() => navigate('/evaluation-results')} className="back-button">
+          Back to Table
         </button>
       </div>
     </div>

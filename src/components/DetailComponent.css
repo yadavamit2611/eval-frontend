@@ -68,6 +68,10 @@
     color: #721c24 !important;
   }
 
+  .equal-value {
+    background-color: lightyellow !important; /* Red for lower values */
+  }
+
   .back-button {
     margin-bottom: 20px !important;
     padding: 10px 20px !important;
