@@ -50,7 +50,7 @@ const UploadDataset = () => {
                 <h2 style={styles.title}>File Upload</h2>
                 <div style={styles.fileInputContainer}>
                     <input
-                        accept="*"
+                        accept=".csv"
                         style={{ display: 'none' }}
                         id="file-upload"
                         type="file"

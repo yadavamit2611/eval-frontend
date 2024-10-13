@@ -7,6 +7,7 @@ import ErrorPage from './components/ErrorPage';
 import './App.css';
 import HomePage from './components/Home';
 import UploadDataset from './components/UploadDataset';
+import SingleEval from './components/SingleEval';
 
 function App() {
   const [data, setData] = useState(null);
@@ -40,6 +41,7 @@ function App() {
         <Route path="/details/:id" element={data ?<DetailComponent data={data} /> : <ErrorPage error={error} />} />
         <Route path="/evaluation-results" element={data? <TableComponent data={data} />: <ErrorPage error={error} /> } />
         <Route path="/upload-dataset" element={<UploadDataset />} />
+        <Route path="/test-eval" element={<SingleEval />} />
 {/*          <Route path="/preprocess-data" element={<PreprocessData />} />
         <Route path="/view-results" element={<ViewResults />} />
         <Route path="/start-evaluation" element={<StartEvaluation />} />

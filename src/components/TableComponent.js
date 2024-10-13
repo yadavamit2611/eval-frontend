@@ -16,16 +16,8 @@ const TableComponent = ({ data = [] }) => {
         accessor: 'Question',
       },
       {
-        Header: 'Answer',
+        Header: 'Ideal Answer',
         accessor: 'Answer',
-      },
-      {
-        Header: 'Question Tokens',
-        accessor: 'Question_tokens',
-      },
-      {
-        Header: 'Answer Tokens',
-        accessor: 'Answer_tokens',
       },
     ],
     []

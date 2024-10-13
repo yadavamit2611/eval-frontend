@@ -132,7 +132,6 @@ const DetailComponent = ({ data }) => {
 
   return (
     <div className="detail-container">
-      <h2>Comparison Card</h2>
       <div className="card">
         <div className="card-section">
           <h3>Sector</h3>

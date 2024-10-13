@@ -116,7 +116,7 @@ body {
     margin-bottom: 10px !important;
     font-size: 14px !important;
     color: #ffffff !important;
-    background-color: #3498db !important;
+    background-color: #4CAF50 !important;
     border: none !important;
     border-radius: 8px !important;
     cursor: pointer !important;
@@ -124,7 +124,7 @@ body {
 }
   
 .btn:hover {
-    background-color: #2980b9 !important;
+    background-color: #1b5d1d !important;
 }
   
 .btn:active {
@@ -143,7 +143,7 @@ body {
     padding: 8px 12px !important;
     font-size: 14px !important;
     color: #ffffff !important;
-    background-color: #3498db !important;
+    background-color: #4CAF50 !important;
     border: none !important;
     border-radius: 8px !important;
     cursor: pointer !important;
@@ -156,7 +156,7 @@ body {
 }
   
 .pagination button:hover:not(:disabled) {
-    background-color: #2980b9 !important;
+    background-color: #1b5d1d !important;
 }
   
 .pagination span {

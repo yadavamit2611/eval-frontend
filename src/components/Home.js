@@ -1,34 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
   const navigate = useNavigate();
 
+  // State to control which cards are disabled
+  const [isPreprocessDisabled] = useState(true);
+  const [isViewResultsDisabled] = useState(true);
+  const [isStartEvaluatingDisabled] = useState(true);
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>LLM Eval Prototype</h1>
       <p style={styles.subtitle}>Choose an option to proceed</p>
+
+      {/* Second Section for Test Eval */}
+      <div style={styles.testEvalSection}>
+        <div style={styles.cardContainer}>
+          <div style={styles.card} onClick={() => navigate('/test-eval')}>
+            <i className="fas fa-bolt" style={styles.icon}></i>
+            <h2 style={styles.cardTitle}>Run Single Evaluation</h2>
+            <p style={styles.cardDescription}>Run tests to evaluate LLM responses.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 style={styles.midortitle}>OR</h2>
+
+      {/* First Section */}
       <div style={styles.cardContainer}>
+        {/* Upload Dataset Card (Always Enabled) */}
         <div style={styles.card} onClick={() => navigate('/upload-dataset')}>
           <i className="fas fa-upload" style={styles.icon}></i>
           <h2 style={styles.cardTitle}>Upload Dataset</h2>
           <p style={styles.cardDescription}>Upload new question & answers dataset using an Excel file.</p>
         </div>
 
-        <div style={styles.card} onClick={() => navigate('/preprocess-data')}>
-          <i className="fas fa-cogs" style={styles.icon}></i>
+        {/* Preprocess Data Card (Disabled) */}
+        <div
+          style={isPreprocessDisabled ? { ...styles.card, ...styles.disabledCard } : styles.card}
+          onClick={!isPreprocessDisabled ? () => navigate('/preprocess-data') : null}
+        >
+          <i className="fas fa-cogs" style={isPreprocessDisabled ? styles.disabledIcon : styles.icon}></i>
           <h2 style={styles.cardTitle}>Preprocess Data</h2>
           <p style={styles.cardDescription}>Preprocess data and generate LLM responses.</p>
         </div>
 
-        <div style={styles.card} onClick={() => navigate('/view-results')}>
-          <i className="fas fa-chart-bar" style={styles.icon}></i>
+        {/* View Results Card (Disabled) */}
+        <div
+          style={isViewResultsDisabled ? { ...styles.card, ...styles.disabledCard } : styles.card}
+          onClick={!isViewResultsDisabled ? () => navigate('/view-results') : null}
+        >
+          <i className="fas fa-chart-bar" style={isViewResultsDisabled ? styles.disabledIcon : styles.iconstyles.icon}></i>
           <h2 style={styles.cardTitle}>View Results</h2>
           <p style={styles.cardDescription}>View the generated results and insights.</p>
         </div>
 
-        <div style={styles.card} onClick={() => navigate('/start-evaluation')}>
-          <i className="fas fa-play" style={styles.icon}></i>
+        {/* Start Evaluating Card (Disabled) */}
+        <div
+          style={isStartEvaluatingDisabled ? { ...styles.card, ...styles.disabledCard } : styles.card}
+          onClick={!isStartEvaluatingDisabled ? () => navigate('/start-evaluation') : null}
+        >
+          <i className="fas fa-play" style={isStartEvaluatingDisabled ? styles.disabledIcon : styles.icon}></i>
           <h2 style={styles.cardTitle}>Start Evaluating</h2>
           <p style={styles.cardDescription}>Start evaluating the generated responses.</p>
         </div>
@@ -70,6 +103,20 @@ const styles = {
     maxWidth: '1200px',
     width: '100%',
   },
+  testEvalSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: '40px',
+    marginBottom: '40px', // Space between the two sections
+    width: '100%',
+    textAlign: 'center',
+  },
+  midortitle: {
+    fontSize: '28px',
+    marginBottom: '40px',
+    color: '#333',
+  },
   card: {
     backgroundColor: '#fff',
     borderRadius: '10px',
@@ -79,9 +126,12 @@ const styles = {
     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
     cursor: 'pointer',
   },
-  cardHover: {
-    transform: 'translateY(-5px)',
-    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.15)',
+  disabledCard: {
+    backgroundColor: '#e0e0e0', // Lighter background for disabled card
+    color: '#999', // Text color for disabled card
+    cursor: 'not-allowed', // Not-allowed cursor for disabled card
+    pointerEvents: 'none', // Prevents clicks on disabled cards
+    boxShadow: 'none', // Remove shadow for disabled card
   },
   cardTitle: {
     fontSize: '24px',
@@ -95,6 +145,10 @@ const styles = {
   icon: {
     fontSize: '40px',
     color: '#4CAF50',
+  },
+  disabledIcon: {
+    fontSize: '40px',
+    color: '#808080',
   }
 };
 
