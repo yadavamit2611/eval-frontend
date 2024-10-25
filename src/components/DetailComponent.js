@@ -13,27 +13,27 @@ const DetailComponent = ({ data }) => {
 
   // Extract GPT-3.5 and GPT-4 data
   const gpt3_5Data = {
-    "Response": selectedRow['gpt3.5-turbo_response'],
-    "BLEU": selectedRow['BLEU GPT3.5'],
-    "METEOR": selectedRow['METEOR GPT3.5'],
-    "ROUGE": selectedRow['ROUGE GPT3.5'], // Handle nested ROUGE data
-    "PERPLEXITY": selectedRow['PERPLEXITY GPT3.5'],
-    "BERTSCORE": selectedRow['BERTSCORE GPT3.5'],
-    "LLM Fact Verification": selectedRow['LLM Fact Verification GPT3.5 Response'],
-    "Semantic Similarity": selectedRow['SemanticSimilarity GPT3.5 Response'],
-    "Composite Score": selectedRow['Composite Score GPT3.5'],
+    "Response": selectedRow['gpt3_5_response'],
+    "Composite Score": selectedRow['gpt3_composite_score'],
+    "BLEU": selectedRow.gpt3_results?.bleu,
+    "METEOR": selectedRow.gpt3_results?.meteor,
+    "ROUGE": selectedRow.gpt3_results?.rouge,
+    "PERPLEXITY": selectedRow.gpt3_results?.perplexity,
+    "BERTSCORE": selectedRow.gpt3_results?.bert_score,
+    "Factual": selectedRow.gpt3_results?.factual,
+    "Semantic Similarity": selectedRow.gpt3_results?.semantic,
   };
 
   const gpt4Data = {
-    "Response": selectedRow['gpt-4-turbo_response'],
-    "BLEU": selectedRow['BLEU GPT4'],
-    "METEOR": selectedRow['METEOR GPT4'],
-    "ROUGE": selectedRow['ROUGE GPT4'], // Handle nested ROUGE data
-    "PERPLEXITY": selectedRow['PERPLEXITY GPT4'],
-    "BERTSCORE": selectedRow['BERTSCORE GPT4'],
-    "LLM Fact Verification": selectedRow['LLM Fact Verification GPT4 Response'],
-    "Semantic Similarity": selectedRow['SemanticSimilarity GPT4 Response'],
-    "Composite Score": selectedRow['Composite Score GPT4'],
+    "Response": selectedRow['gpt_4_response'],
+    "Composite Score": selectedRow['gpt4_composite_score'],
+    "BLEU": selectedRow.gpt4_results?.bleu,
+    "METEOR": selectedRow.gpt4_results?.meteor,
+    "ROUGE": selectedRow.gpt4_results?.rouge,
+    "PERPLEXITY": selectedRow.gpt4_results?.perplexity,
+    "BERTSCORE": selectedRow.gpt4_results?.bert_score,
+    "Factual": selectedRow.gpt4_results?.factual,
+    "Semantic Similarity": selectedRow.gpt4_results?.semantic,
   };
 
   // Function to handle displaying object-like metrics (e.g., ROUGE)
@@ -145,14 +145,7 @@ const DetailComponent = ({ data }) => {
           <h3>Answer</h3>
           <p>{selectedRow.Answer}</p>
         </div>
-{/*         <div className="card-section">
-          <h3>Question Tokens</h3>
-          <p>{selectedRow.Question_tokens}</p>
-        </div>
-        <div className="card-section">
-          <h3>Answer Tokens</h3>
-          <p>{selectedRow.Answer_tokens}</p>
-        </div> */}
+
         {/* Comparison Table */}
         <div className="card-section">
           <h3 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontStyle: 'italic' }}>
@@ -167,8 +160,8 @@ const DetailComponent = ({ data }) => {
               </tr>
             </thead>
             <tbody>
-            <tr>
-               <td>Response</td>
+              <tr>
+                <td>Response</td>
                 <td className={getResponseColor('GPT-3.5')}>{gpt3_5Data['Response']}</td>
                 <td className={getResponseColor('GPT-4')}>{gpt4Data['Response']}</td>
               </tr>

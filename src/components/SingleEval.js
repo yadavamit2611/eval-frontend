@@ -56,6 +56,7 @@ function SingleEval() {
         });
 
         const data = await response.json();
+        console.log(data);
         const llmScore = data.choices[0].message.content;
         setLlmResponse(llmScore); // Store LLM response
       } catch (error) {
