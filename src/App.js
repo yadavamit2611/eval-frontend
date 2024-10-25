@@ -14,41 +14,40 @@ function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
+  const updateData = (newData) => {
+    setData(newData); // Function to update data state
+  };
 
   useEffect(() => {
     // fetching data
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/webResults'); // API endpoint
+        const response = await fetch('http://127.0.0.1:5000/api/data'); // API endpoint
         if (!response.ok) {
           throw new Error('Network response was not ok');
-        }else{
+        } else {
           const result = await response.json();
           console.log(result);
-          setData(result);          
+          setData(result);
         }
       } catch (error) {
         // Handle the error and set error state
-        setError('Failed to connect to the server');  
+        setError('Failed to connect to the server');
       }
-    };  
+    };
     fetchData();
   }, []);
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={ <HomePage /> } />
-        <Route path="/details/:id" element={data ?<DetailComponent data={data} /> : <ErrorPage error={error} />} />
+        <Route path="/" element={<HomePage updateData={updateData} />} />
+        <Route path="/details/:id" element={data ? <DetailComponent data={data} /> : <ErrorPage error={error} />} />
         <Route path="/preprocess-data" element={<LLMResponses />} />
-        <Route path="/evaluation-results" element={data? <TableComponent data={data} />: <ErrorPage error={error} /> } />
+        <Route path="/evaluation-results" element={data ? <TableComponent data={data} /> : <ErrorPage error={error} />} />
         <Route path="/upload-dataset" element={<UploadDataset />} />
         <Route path="/test-eval" element={<SingleEval />} />
-{/*          <Route path="/preprocess-data" element={<PreprocessData />} />
-        <Route path="/view-results" element={<ViewResults />} />
-        <Route path="/start-evaluation" element={<StartEvaluation />} />
-        <Route path="/evaluation-results" element={<EvaluationResults />} />  */}
-        <Route path="/error" element={<ErrorPage error={error}/>} />
+        <Route path="/error" element={<ErrorPage error={error} />} />
       </Routes>
     </Router>
   );

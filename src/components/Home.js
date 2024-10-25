@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from 'react-bootstrap'; // Import Spinner from React Bootstrap
 
-function HomePage() {
+function HomePage({updateData}) {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -59,6 +59,31 @@ function HomePage() {
       .finally(() => setLoading(false));
   };
 
+  const showEvaluationResults = async () => {
+    setLoading(true);
+    setError(''); // Clear any previous error
+
+    fetch('http://127.0.0.1:5000/api/webResults', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.error) {
+          setError(result.error); // Set error message if the response contains an error
+        } else {
+          updateData(result); // Call the function to update data in App.js
+          navigate('/evaluation-results'); // Navigate to evaluation results page
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        setError('Failed to fetch eval results');
+      })
+      .finally(() => setLoading(false));
+  };
+
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>LLM Eval Prototype</h1>
@@ -100,7 +125,7 @@ function HomePage() {
           <p style={styles.cardDescription}>Start evaluating the generated responses.</p>
         </div>
 
-        <div style={styles.card} onClick={() => navigate('/evaluation-results')}>
+        <div style={styles.card} onClick={showEvaluationResults}>
           <i className="fas fa-poll" style={styles.icon}></i>
           <h2 style={styles.cardTitle}>Evaluation Results</h2>
           <p style={styles.cardDescription}>See the results of the evaluation.</p>

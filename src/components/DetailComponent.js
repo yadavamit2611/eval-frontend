@@ -10,9 +10,24 @@ const DetailComponent = ({ data }) => {
   if (!selectedRow) {
     return <div>Row not found</div>;
   }
-
-  // Extract GPT-3.5 and GPT-4 data
-  const gpt3_5Data = {
+  const isOldGPT3Format = (selectedRow) => {
+    return selectedRow.hasOwnProperty('gpt3.5-turbo_response') || selectedRow.hasOwnProperty('BLEU GPT3.5');
+  };
+  const isOldGPT4Format = (selectedRow) => {
+    return selectedRow.hasOwnProperty('gpt-4-turbo_response') || selectedRow.hasOwnProperty('BLEU GPT4');
+  };
+  // Extract GPT-3.5 and GPT-4 data with support for both old and new formats
+  const gpt3_5Data = isOldGPT3Format(selectedRow) ? {
+    "Response": selectedRow['gpt3.5-turbo_response'],
+    "BLEU": selectedRow['BLEU GPT3.5'],
+    "METEOR": selectedRow['METEOR GPT3.5'],
+    "ROUGE": selectedRow['ROUGE GPT3.5'],
+    "PERPLEXITY": selectedRow['PERPLEXITY GPT3.5'],
+    "BERTSCORE": selectedRow['BERTSCORE GPT3.5'],
+    "LLM Fact Verification": selectedRow['LLM Fact Verification GPT3.5 Response'],
+    "Semantic Similarity": selectedRow['SemanticSimilarity GPT3.5 Response'],
+    "Composite Score": selectedRow['Composite Score GPT3.5']
+  } : {
     "Response": selectedRow['gpt3_5_response'],
     "Composite Score": selectedRow['gpt3_composite_score'],
     "BLEU": selectedRow.gpt3_results?.bleu,
@@ -23,8 +38,18 @@ const DetailComponent = ({ data }) => {
     "Factual": selectedRow.gpt3_results?.factual,
     "Semantic Similarity": selectedRow.gpt3_results?.semantic,
   };
-
-  const gpt4Data = {
+  
+  const gpt4Data = isOldGPT4Format(selectedRow) ? {
+    "Response": selectedRow['gpt-4-turbo_response'],
+    "BLEU": selectedRow['BLEU GPT4'],
+    "METEOR": selectedRow['METEOR GPT4'],
+    "ROUGE": selectedRow['ROUGE GPT4'],
+    "PERPLEXITY": selectedRow['PERPLEXITY GPT4'],
+    "BERTSCORE": selectedRow['BERTSCORE GPT4'],
+    "LLM Fact Verification": selectedRow['LLM Fact Verification GPT4 Response'],
+    "Semantic Similarity": selectedRow['SemanticSimilarity GPT4 Response'],
+    "Composite Score": selectedRow['Composite Score GPT4']
+  } : {
     "Response": selectedRow['gpt_4_response'],
     "Composite Score": selectedRow['gpt4_composite_score'],
     "BLEU": selectedRow.gpt4_results?.bleu,
