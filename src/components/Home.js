@@ -105,7 +105,7 @@ function HomePage({updateData}) {
         <div style={styles.card} onClick={() => navigate('/upload-dataset')}>
           <i className="fas fa-upload" style={styles.icon}></i>
           <h2 style={styles.cardTitle}>Upload Dataset</h2>
-          <p style={styles.cardDescription}>Upload new question & answers dataset using an Excel file.</p>
+          <p style={styles.cardDescription}>Upload new question & answers dataset using an csv file.</p>
         </div>
 
         {/* Preprocess Data Card */}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap'; // Import Spinner from React-Bootstrap
 
 // Modal component for displaying evaluation results
 const Modal = ({ showModal, handleClose, children }) => {
@@ -23,21 +24,23 @@ function SingleEval() {
   const [question, setQuestion] = useState('');
   const [idealAnswer, setIdealAnswer] = useState('');
   const [responseType, setResponseType] = useState('llm');
-  const [selectedModel, setSelectedModel] = useState('Llama 3.2');
+  const [selectedModel, setSelectedModel] = useState('llama');
   const [userResponse, setUserResponse] = useState('');
   const [evaluationResults, setEvaluationResults] = useState(null);
   const [llmResponse, setLlmResponse] = useState(null);
-  const [showModal, setShowModal] = useState(false); // State to track modal visibility
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state
   const navigate = useNavigate();
 
   const getLLMResponse = async () => {
-    if (responseType === 'llm') {
-      try {
-        if(question === null || question.trim() === ''){
-            throw new Error('Question cannot be empty.');
-        }else if(idealAnswer === null || idealAnswer.trim() === ''){
-            throw new Error('Ideal Answer cannot be empty.');
-        }        
+    setLoading(true); // Start loading
+    try {
+      if (question === null || question.trim() === '') {
+        throw new Error('Question cannot be empty.');
+      } else if (idealAnswer === null || idealAnswer.trim() === '') {
+        throw new Error('Ideal Answer cannot be empty.');
+      }
+      if (selectedModel === 'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF/llama-3.2-1b-instruct-q8_0.gguf') {
         const body = {
           model: selectedModel,
           messages: [
@@ -45,6 +48,7 @@ function SingleEval() {
             { role: 'user', content: `Claim: ${question}` },
           ],
           temperature: 0.7,
+          max_tokens: 200,
         };
 
         const response = await fetch('http://localhost:1234/v1/chat/completions', {
@@ -58,23 +62,43 @@ function SingleEval() {
         const data = await response.json();
         console.log(data);
         const llmScore = data.choices[0].message.content;
-        setLlmResponse(llmScore); // Store LLM response
-      } catch (error) {
-        console.error('Error fetching LLM response:', error);
-        setLlmResponse('Error fetching LLM response ' + error);
+        setLlmResponse(llmScore);
+      } else {
+        const body = {
+          question: question,
+          ideal_answer: idealAnswer,
+          selectedModel: selectedModel,
+        };
+        const response = await fetch('http://localhost:5000/api/generate-answers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+        const data = await response.json();
+        console.log(data);
+        const llmScore = data.result;
+        setLlmResponse(llmScore);
       }
+    } catch (error) {
+      console.error('Error fetching LLM response:', error);
+      setLlmResponse('Error fetching LLM response ' + error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
   const handleEvaluate = async () => {
+    setLoading(true); // Start loading
     try {
       if (responseType === 'own' && (userResponse == null || userResponse.trim() === '')) {
         throw new Error('Your response cannot be empty.');
       } else if (responseType === 'llm' && (llmResponse == null || llmResponse.trim() === '')) {
         throw new Error('The LLM response cannot be empty.');
-      }else if(question === null || question.trim() === ''){
+      } else if (question === null || question.trim() === '') {
         throw new Error('Question cannot be empty.');
-      }else if(idealAnswer === null || idealAnswer.trim() === ''){
+      } else if (idealAnswer === null || idealAnswer.trim() === '') {
         throw new Error('Ideal Answer cannot be empty.');
       }
 
@@ -97,12 +121,14 @@ function SingleEval() {
       }
 
       const data = await response.json();
-      setEvaluationResults(data); // Set the evaluation results to the state
-      setShowModal(true); // Open the modal after evaluation
+      setEvaluationResults(data);
+      setShowModal(true);
     } catch (error) {
       console.error('Error Fetching Evaluation Results:', error);
       setEvaluationResults('Error Fetching Evaluation Results');
-      setShowModal(true); // Still show modal with error message
+      setShowModal(true);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -177,8 +203,16 @@ function SingleEval() {
           </div>
         )}
 
+        {/* Loading Spinner */}
+        {loading && (
+          <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+            <Spinner animation="border" variant="primary" />
+          </div>
+        )}
+
+        {/* Get LLM Response Button */}
         {responseType === 'llm' && (
-          <button style={styles.button} onClick={getLLMResponse}>
+          <button style={styles.button} onClick={getLLMResponse} disabled={loading}>
             Get LLM Response
           </button>
         )}
@@ -203,7 +237,7 @@ function SingleEval() {
         )}
 
         {/* Evaluate Button */}
-        <button style={styles.button} onClick={handleEvaluate}>
+        <button style={styles.button} onClick={handleEvaluate} disabled={loading}>
           Evaluate
         </button>
 
@@ -247,6 +281,26 @@ function SingleEval() {
                       <td style={styles.metricLabel}><strong>ROUGE-L:</strong></td>
                       <td style={styles.metricValue}>{evaluationResults['llm-results'].rouge.rougeL[2]}</td>
                     </tr>
+                    <tr>
+                      <td style={styles.metricLabel}><strong>PERPLEXITY</strong></td>
+                      <td style={styles.metricValue}>{evaluationResults['llm-results'].perplexity}</td>
+                    </tr>
+                    <tr>
+                      <td style={styles.metricLabel}><strong>Semantic Similarity</strong></td>
+                      <td style={styles.metricValue}>{evaluationResults['llm-results'].semanticsimilarity}</td>
+                    </tr>
+                    <tr>
+                      <td style={styles.metricLabel}><strong>Factual Score</strong></td>
+                      <td style={styles.metricValue}>{evaluationResults['llm-results'].factualscore}</td>
+                    </tr>
+                    <tr>
+                      <td style={styles.metricLabel}><strong>BERTScore</strong></td>
+                      <td style={styles.metricValue}>{evaluationResults['llm-results'].BERTScore}</td>
+                    </tr>
+                    <tr>
+                      <td style={styles.metricLabel}><strong>Composite Score</strong></td>
+                      <td style={styles.metricValue}>{evaluationResults['llm-results'].compositescore}</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -254,9 +308,11 @@ function SingleEval() {
           )}
         </Modal>
 
+        {/* Go back to Homepage Button */}
         <button style={styles.button} onClick={() => navigate('/')}>
-          Go to Dashboard
+          Go back to Homepage
         </button>
+
       </div>
     </div>
   );
@@ -280,7 +336,7 @@ const modalStyles = {
     backgroundColor: '#fff',
     padding: '20px',
     borderRadius: '8px',
-    maxWidth: '500px',
+    maxWidth: '800px',
     width: '100%',
     textAlign: 'center',
     position: 'relative',
